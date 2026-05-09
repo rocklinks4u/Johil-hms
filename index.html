@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johil Amansie Hospital - Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="hospital-logo">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h2>Johil Amansie Hospital</h2>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item" data-section="patient-registration">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Patient Registration</span>
+                </a>
+                <a href="#" class="menu-item" data-section="outpatients">
+                    <i class="fas fa-users"></i>
+                    <span>Outpatients</span>
+                </a>
+                <a href="#" class="menu-item" data-section="inpatients">
+                    <i class="fas fa-bed"></i>
+                    <span>Inpatients</span>
+                </a>
+                <a href="#" class="menu-item" data-section="patient-records">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Patient Records</span>
+                </a>
+                <a href="#" class="menu-item" data-section="vital-signs">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Vital Signs</span>
+                </a>
+                <a href="#" class="menu-item" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>&copy; 2026 Johil Amansie Hospital</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <div class="top-navbar">
+                <div class="navbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Hospital Management System</h1>
+                </div>
+                <div class="navbar-right">
+                    <div class="current-datetime">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDateTime"></span>
+                    </div>
+                    <div class="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Hospital Staff</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <div class="section-header">
+                        <h2>Dashboard</h2>
+                        <p>Hospital Overview & Statistics</p>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon total">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Patients</h3>
+                                <p class="stat-number" id="statTotalPatients">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon outpatient">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Outpatients</h3>
+                                <p class="stat-number" id="statOutpatients">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon inpatient">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Inpatients</h3>
+                                <p class="stat-number" id="statInpatients">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon nhis">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>NHIS Patients</h3>
+                                <p class="stat-number" id="statNHIS">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon cash">
+                                <i class="fas fa-money-bill"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Cash Patients</h3>
+                                <p class="stat-number" id="statCash">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Patients -->
+                    <div class="dashboard-section">
+                        <h3>Recent Registrations</h3>
+                        <div class="recent-patients-table">
+                            <table id="recentPatientsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Folder Number</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>NHIS Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Recent patients will be populated here -->
+                                </tbody>
+                            </table>
+                            <p class="empty-message" id="recentEmptyMessage">No recent registrations</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patient Registration Section -->
+                <section id="patient-registration" class="section">
+                    <div class="section-header">
+                        <h2>Patient Registration</h2>
+                        <p>Register a new patient</p>
+                    </div>
+
+                    <div class="form-container">
+                        <!-- Folder Number Display -->
+                        <div class="folder-number-display">
+                            <span>Folder Number:</span>
+                            <p id="generatedFolderNumber">2026/001</p>
+                        </div>
+                        <input type="hidden" id="editingFolderNumber">
+
+                        <!-- Patient Registration Form -->
+                        <form id="patientForm" class="registration-form">
+                            <!-- Personal Information -->
+                            <fieldset class="form-section">
+                                <legend>Personal Information</legend>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="registrationDate">Registration Date *</label>
+                                        <input type="date" id="registrationDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fullName">Full Name *</label>
+                                        <input type="text" id="fullName" placeholder="Enter patient's full name" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="age">Age *</label>
+                                        <input type="number" id="age" placeholder="Enter age" min="0" max="150" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gender">Gender *</label>
+                                        <select id="gender" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number *</label>
+                                        <input type="tel" id="phone" placeholder="Enter phone number" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address">Address *</label>
+                                        <input type="text" id="address" placeholder="Enter residential address" required>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Patient Status -->
+                            <fieldset class="form-section">
+                                <legend>Patient Status</legend>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="patientStatus" value="New" required>
+                                        <span class="radio-custom"></span>
+                                        New Patient
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="patientStatus" value="Old">
+                                        <span class="radio-custom"></span>
+                                        Old Patient
+                                    </label>
+                                </div>
+                            </fieldset>
+
+                            <!-- Patient Category -->
+                            <fieldset class="form-section">
+                                <legend>Patient Category</legend>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="patientCategory" value="Outpatient" required>
+                                        <span class="radio-custom"></span>
+                                        Outpatient
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="patientCategory" value="Inpatient">
+                                        <span class="radio-custom"></span>
+                                        Inpatient
+                                    </label>
+                                </div>
+                            </fieldset>
+
+                            <!-- NHIS / Insurance Section -->
+                            <fieldset class="form-section">
+                                <legend>NHIS / Insurance Information</legend>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="nhisStatus" value="Yes" required>
+                                        <span class="radio-custom"></span>
+                                        Has NHIS
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="nhisStatus" value="No">
+                                        <span class="radio-custom"></span>
+                                        No NHIS
+                                    </label>
+                                </div>
+
+                                <!-- NHIS Details (Hidden by default) -->
+                                <div id="nhisDetails" class="conditional-section">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="nhisNumber">NHIS Number</label>
+                                            <input type="text" id="nhisNumber" placeholder="Enter NHIS number">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="insuranceProvider">Insurance Provider</label>
+                                            <input type="text" id="insuranceProvider" placeholder="Enter insurance provider">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cash Patient Note (Hidden by default) -->
+                                <div id="cashPatientNote" class="conditional-section alert-info">
+                                    <p><i class="fas fa-info-circle"></i> This patient is registered as a Cash Patient</p>
+                                </div>
+                            </fieldset>
+
+                            <!-- Buttons -->
+                            <div class="button-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Patient
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="updateBtn">
+                                    <i class="fas fa-sync"></i> Update Patient
+                                </button>
+                                <button type="button" class="btn btn-danger" id="deleteBtn">
+                                    <i class="fas fa-trash"></i> Delete Patient
+                                </button>
+                                <button type="reset" class="btn btn-light">
+                                    <i class="fas fa-redo"></i> Clear Form
+                                </button>
+                                <button type="button" class="btn btn-info" id="printBtn">
+                                    <i class="fas fa-print"></i> Print
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Vital Signs Section -->
+                    <div class="vital-signs-container">
+                        <div class="section-header">
+                            <h3>Vital Signs</h3>
+                            <p>Record patient vital signs</p>
+                        </div>
+
+                        <form id="vitalSignsForm" class="vital-signs-form">
+                            <div class="vital-signs-grid">
+                                <div class="vital-sign-item">
+                                    <label for="temperature">
+                                        <i class="fas fa-thermometer-half"></i>
+                                        Temperature (°C)
+                                    </label>
+                                    <input type="number" id="temperature" placeholder="36.5" step="0.1" min="35" max="42">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="bloodPressure">
+                                        <i class="fas fa-heartbeat"></i>
+                                        Blood Pressure (mmHg)
+                                    </label>
+                                    <input type="text" id="bloodPressure" placeholder="120/80">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="pulseRate">
+                                        <i class="fas fa-pulse"></i>
+                                        Pulse Rate (bpm)
+                                    </label>
+                                    <input type="number" id="pulseRate" placeholder="72" min="0" max="200">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="respiratoryRate">
+                                        <i class="fas fa-wind"></i>
+                                        Respiratory Rate
+                                    </label>
+                                    <input type="number" id="respiratoryRate" placeholder="16" min="0" max="50">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="weight">
+                                        <i class="fas fa-weight"></i>
+                                        Weight (kg)
+                                    </label>
+                                    <input type="number" id="weight" placeholder="70" step="0.1" min="0" max="300">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="height">
+                                        <i class="fas fa-ruler-vertical"></i>
+                                        Height (cm)
+                                    </label>
+                                    <input type="number" id="height" placeholder="170" min="0" max="300">
+                                </div>
+
+                                <div class="vital-sign-item">
+                                    <label for="oxygenSaturation">
+                                        <i class="fas fa-lungs"></i>
+                                        Oxygen Saturation (SpO2) %
+                                    </label>
+                                    <input type="number" id="oxygenSaturation" placeholder="98" min="0" max="100">
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Vital Signs
+                                </button>
+                                <button type="reset" class="btn btn-light">
+                                    <i class="fas fa-redo"></i> Clear
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Outpatients Section -->
+                <section id="outpatients" class="section">
+                    <div class="section-header">
+                        <h2>Outpatients</h2>
+                        <p>View and manage outpatients</p>
+                    </div>
+
+                    <div class="records-container">
+                        <div class="search-filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="outpatientSearchInput" placeholder="Search by folder number, name, or phone...">
+                            </div>
+                            <button class="btn btn-light" id="exportOutpatients">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="outpatientsTable" class="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Folder Number</th>
+                                        <th>Registration Date</th>
+                                        <th>Full Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>NHIS Status</th>
+                                        <th>Phone Number</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Outpatients will be populated here -->
+                                </tbody>
+                            </table>
+                            <p class="empty-message" id="outpatientsEmptyMessage">No outpatients found</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inpatients Section -->
+                <section id="inpatients" class="section">
+                    <div class="section-header">
+                        <h2>Inpatients</h2>
+                        <p>View and manage inpatients</p>
+                    </div>
+
+                    <div class="records-container">
+                        <div class="search-filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="inpatientSearchInput" placeholder="Search by folder number, name, or phone...">
+                            </div>
+                            <button class="btn btn-light" id="exportInpatients">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="inpatientsTable" class="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Folder Number</th>
+                                        <th>Registration Date</th>
+                                        <th>Full Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>NHIS Status</th>
+                                        <th>Phone Number</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Inpatients will be populated here -->
+                                </tbody>
+                            </table>
+                            <p class="empty-message" id="inpatientsEmptyMessage">No inpatients found</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patient Records Section -->
+                <section id="patient-records" class="section">
+                    <div class="section-header">
+                        <h2>Patient Records</h2>
+                        <p>Complete patient database</p>
+                    </div>
+
+                    <div class="records-container">
+                        <div class="search-filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="recordSearchInput" placeholder="Search by folder number, name, or phone...">
+                            </div>
+                            <div class="filter-group">
+                                <select id="recordFilterType">
+                                    <option value="">All Types</option>
+                                    <option value="Outpatient">Outpatient</option>
+                                    <option value="Inpatient">Inpatient</option>
+                                </select>
+                                <select id="recordFilterNHIS">
+                                    <option value="">All Payments</option>
+                                    <option value="Yes">NHIS</option>
+                                    <option value="No">Cash</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-light" id="exportRecords">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="allRecordsTable" class="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Folder Number</th>
+                                        <th>Registration Date</th>
+                                        <th>Full Name</th>
+                                        <th>Type</th>
+                                        <th>NHIS Status</th>
+                                        <th>Phone Number</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- All records will be populated here -->
+                                </tbody>
+                            </table>
+                            <p class="empty-message" id="recordsEmptyMessage">No patient records found</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vital Signs History Section -->
+                <section id="vital-signs" class="section">
+                    <div class="section-header">
+                        <h2>Vital Signs</h2>
+                        <p>Patient vital signs history</p>
+                    </div>
+
+                    <div class="records-container">
+                        <div class="search-filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="vitalSearchInput" placeholder="Search by patient name or folder number...">
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="vitalSignsTable" class="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Folder Number</th>
+                                        <th>Patient Name</th>
+                                        <th>Date</th>
+                                        <th>Temperature</th>
+                                        <th>BP</th>
+                                        <th>Pulse</th>
+                                        <th>Resp Rate</th>
+                                        <th>Weight</th>
+                                        <th>Height</th>
+                                        <th>SpO2</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Vital signs records will be populated here -->
+                                </tbody>
+                            </table>
+                            <p class="empty-message" id="vitalSignsEmptyMessage">No vital signs records found</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports" class="section">
+                    <div class="section-header">
+                        <h2>Reports</h2>
+                        <p>Hospital statistics and analytics</p>
+                    </div>
+
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3>Patient Distribution</h3>
+                            <div class="report-content">
+                                <div class="report-stat">
+                                    <span>Outpatients:</span>
+                                    <strong id="reportOutpatients">0</strong>
+                                </div>
+                                <div class="report-stat">
+                                    <span>Inpatients:</span>
+                                    <strong id="reportInpatients">0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Payment Method</h3>
+                            <div class="report-content">
+                                <div class="report-stat">
+                                    <span>NHIS Patients:</span>
+                                    <strong id="reportNHIS">0</strong>
+                                </div>
+                                <div class="report-stat">
+                                    <span>Cash Patients:</span>
+                                    <strong id="reportCash">0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Gender Distribution</h3>
+                            <div class="report-content">
+                                <div class="report-stat">
+                                    <span>Male:</span>
+                                    <strong id="reportMale">0</strong>
+                                </div>
+                                <div class="report-stat">
+                                    <span>Female:</span>
+                                    <strong id="reportFemale">0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Patient Status</h3>
+                            <div class="report-content">
+                                <div class="report-stat">
+                                    <span>New Patients:</span>
+                                    <strong id="reportNew">0</strong>
+                                </div>
+                                <div class="report-stat">
+                                    <span>Old Patients:</span>
+                                    <strong id="reportOld">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="section">
+                    <div class="section-header">
+                        <h2>Settings</h2>
+                        <p>Hospital system settings</p>
+                    </div>
+
+                    <div class="settings-container">
+                        <div class="settings-card">
+                            <h3>System Settings</h3>
+                            <div class="setting-item">
+                                <label>Hospital Name:</label>
+                                <input type="text" id="hospitalName" value="Johil Amansie Hospital">
+                            </div>
+                            <div class="setting-item">
+                                <label>Contact Email:</label>
+                                <input type="email" id="contactEmail" placeholder="hospital@example.com">
+                            </div>
+                            <div class="setting-item">
+                                <label>Contact Phone:</label>
+                                <input type="tel" id="contactPhone" placeholder="+233 XXX XXX XXXX">
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Data Management</h3>
+                            <button class="btn btn-light" id="exportDataBtn">
+                                <i class="fas fa-download"></i> Export All Data (JSON)
+                            </button>
+                            <button class="btn btn-light" id="importDataBtn">
+                                <i class="fas fa-upload"></i> Import Data (JSON)
+                            </button>
+                            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                            <button class="btn btn-danger" id="clearAllDataBtn">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>About</h3>
+                            <p><strong>Hospital Management System v1.0</strong></p>
+                            <p>A modern, professional hospital management application for patient registration, records, and vital signs tracking.</p>
+                            <p><strong>© 2026 Johil Amansie Hospital</strong></p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
