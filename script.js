@@ -12,8 +12,6 @@ class HospitalManagementSystem {
 
     // Initialize the system
     init() {
-        console.log('HMS init called');
-        // Load data from localStorage
         this.patients = this.loadFromStorage('patients') || [];
         this.vitalSigns = this.loadFromStorage('vitalSigns') || [];
         this.nextFolderNumber = this.loadFromStorage('nextFolderNumber') || 1;
@@ -23,12 +21,12 @@ class HospitalManagementSystem {
         this.updateDateTime();
         this.updateDashboard();
         this.setTodayDate();
+        this.updateGeneratedFolderNumber();
+        this.toggleNHISFields();
         setInterval(() => this.updateDateTime(), 1000);
     }
 
     setupFirebase() {
-        // Temporarily disabled for testing navigation
-        console.log('Firebase setup disabled for testing');
     }
 
     folderKey(folderNumber) {
@@ -76,7 +74,9 @@ class HospitalManagementSystem {
             minute: '2-digit',
             second: '2-digit'
         };
-        document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        const el = document.getElementById('currentDateTime');
+        if (!el) return;
+        el.textContent = now.toLocaleString('en-US', options);
     }
 
     setTodayDate() {
@@ -106,6 +106,15 @@ class HospitalManagementSystem {
     async savePatient(e) {
         e.preventDefault();
 
+        const patientStatus = document.querySelector('input[name="patientStatus"]:checked')?.value;
+        const patientCategory = document.querySelector('input[name="patientCategory"]:checked')?.value;
+        const nhisStatus = document.querySelector('input[name="nhisStatus"]:checked')?.value;
+
+        if (!patientStatus || !patientCategory || !nhisStatus) {
+            this.showNotification('Please complete the required patient status fields', 'error');
+            return;
+        }
+
         const folderNumber = await this.allocateFolderNumber();
         const formData = {
             folderNumber,
@@ -115,9 +124,9 @@ class HospitalManagementSystem {
             gender: document.getElementById('gender').value,
             phone: document.getElementById('phone').value,
             address: document.getElementById('address').value,
-            patientStatus: document.querySelector('input[name="patientStatus"]:checked').value,
-            patientCategory: document.querySelector('input[name="patientCategory"]:checked').value,
-            nhisStatus: document.querySelector('input[name="nhisStatus"]:checked').value,
+            patientStatus,
+            patientCategory,
+            nhisStatus,
             nhisNumber: document.getElementById('nhisNumber').value,
             insuranceProvider: document.getElementById('insuranceProvider').value,
             createdAt: new Date().toISOString()
@@ -132,6 +141,7 @@ class HospitalManagementSystem {
         this.setTodayDate();
         document.getElementById('editingFolderNumber').value = '';
         this.updateGeneratedFolderNumber();
+        this.toggleNHISFields();
         this.updateDashboard();
     }
 
@@ -156,6 +166,15 @@ class HospitalManagementSystem {
             return;
         }
 
+        const patientStatus = document.querySelector('input[name="patientStatus"]:checked')?.value;
+        const patientCategory = document.querySelector('input[name="patientCategory"]:checked')?.value;
+        const nhisStatus = document.querySelector('input[name="nhisStatus"]:checked')?.value;
+
+        if (!patientStatus || !patientCategory || !nhisStatus) {
+            this.showNotification('Please complete the required patient status fields', 'error');
+            return;
+        }
+
         const updatedPatient = {
             ...this.patients[patientIndex],
             registrationDate: document.getElementById('registrationDate').value,
@@ -164,9 +183,9 @@ class HospitalManagementSystem {
             gender: document.getElementById('gender').value,
             phone: document.getElementById('phone').value,
             address: document.getElementById('address').value,
-            patientStatus: document.querySelector('input[name="patientStatus"]:checked').value,
-            patientCategory: document.querySelector('input[name="patientCategory"]:checked').value,
-            nhisStatus: document.querySelector('input[name="nhisStatus"]:checked').value,
+            patientStatus,
+            patientCategory,
+            nhisStatus,
             nhisNumber: document.getElementById('nhisNumber').value,
             insuranceProvider: document.getElementById('insuranceProvider').value,
             updatedAt: new Date().toISOString()
@@ -178,6 +197,7 @@ class HospitalManagementSystem {
         document.getElementById('patientForm').reset();
         document.getElementById('editingFolderNumber').value = '';
         this.setTodayDate();
+        this.toggleNHISFields();
         this.updateDashboard();
     }
 
@@ -211,6 +231,7 @@ class HospitalManagementSystem {
         this.showNotification('Patient deleted successfully!', 'success');
         document.getElementById('patientForm').reset();
         document.getElementById('editingFolderNumber').value = '';
+        this.toggleNHISFields();
         this.updateDashboard();
     }
 
@@ -218,15 +239,15 @@ class HospitalManagementSystem {
     async saveVitalSigns(e) {
         e.preventDefault();
 
-        const fullName = document.getElementById('fullName').value;
+        const fullName = document.getElementById('vitalPatientName').value.trim();
         if (!fullName) {
-            this.showNotification('Please register patient first', 'error');
+            this.showNotification('Please enter the patient name for vital signs', 'error');
             return;
         }
 
         const patient = this.patients.find(p => p.fullName.toLowerCase() === fullName.toLowerCase());
         if (!patient) {
-            this.showNotification('Patient not found in records', 'error');
+            this.showNotification('Patient not found in records. Please check the name.', 'error');
             return;
         }
 
@@ -488,6 +509,10 @@ class HospitalManagementSystem {
         document.getElementById('editingFolderNumber').value = patient.folderNumber;
 
         this.toggleNHISFields();
+        this.switchSection('patient-registration');
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        const regMenuItem = document.querySelector('.menu-item[data-section="patient-registration"]');
+        if (regMenuItem) regMenuItem.classList.add('active');
 
         // Scroll to form
         document.getElementById('patient-registration').scrollIntoView({ behavior: 'smooth' });
@@ -568,7 +593,13 @@ class HospitalManagementSystem {
 
     // ==================== NHIS TOGGLE ==================== 
     toggleNHISFields() {
-        const nhisYes = document.querySelector('input[name="nhisStatus"][value="Yes"]').checked;
+        const selected = document.querySelector('input[name="nhisStatus"]:checked');
+        const nhisYes = selected?.value === 'Yes';
+        if (!selected) {
+            document.getElementById('nhisDetails').classList.remove('show');
+            document.getElementById('cashPatientNote').classList.remove('show');
+            return;
+        }
         document.getElementById('nhisDetails').classList.toggle('show', nhisYes);
         document.getElementById('cashPatientNote').classList.toggle('show', !nhisYes);
     }
@@ -732,12 +763,14 @@ class HospitalManagementSystem {
 
     // ==================== NAVIGATION ==================== 
     setupEventListeners() {
-        console.log('Setting up event listeners');
+        const on = (id, event, handler) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(event, handler);
+        };
+
         // Section navigation
         document.querySelectorAll('.menu-item').forEach(item => {
-            console.log('Found menu item:', item.getAttribute('data-section'));
             item.addEventListener('click', (e) => {
-                console.log('Menu item clicked:', item.getAttribute('data-section'));
                 e.stopPropagation();
                 e.preventDefault();
                 const sectionId = item.getAttribute('data-section');
@@ -752,13 +785,13 @@ class HospitalManagementSystem {
         });
 
         // Form events
-        document.getElementById('patientForm').addEventListener('submit', (e) => this.savePatient(e));
-        document.getElementById('updateBtn').addEventListener('click', () => this.updatePatient());
-        document.getElementById('deleteBtn').addEventListener('click', () => this.deletePatient());
-        document.getElementById('printBtn').addEventListener('click', () => this.printPatientRecord());
+        on('patientForm', 'submit', (e) => this.savePatient(e));
+        on('updateBtn', 'click', () => this.updatePatient());
+        on('deleteBtn', 'click', () => this.deletePatient());
+        on('printBtn', 'click', () => this.printPatientRecord());
 
         // Vital signs form
-        document.getElementById('vitalSignsForm').addEventListener('submit', (e) => this.saveVitalSigns(e));
+        on('vitalSignsForm', 'submit', (e) => this.saveVitalSigns(e));
 
         // NHIS toggle
         document.querySelectorAll('input[name="nhisStatus"]').forEach(radio => {
@@ -766,38 +799,39 @@ class HospitalManagementSystem {
         });
 
         // Search functions
-        document.getElementById('recordSearchInput').addEventListener('input', (e) => {
+        on('recordSearchInput', 'input', (e) => {
             this.searchPatients(e.target.value, 'allRecords');
         });
 
-        document.getElementById('outpatientSearchInput').addEventListener('input', (e) => {
+        on('outpatientSearchInput', 'input', (e) => {
             this.searchPatients(e.target.value, 'outpatients');
         });
 
-        document.getElementById('inpatientSearchInput').addEventListener('input', (e) => {
+        on('inpatientSearchInput', 'input', (e) => {
             this.searchPatients(e.target.value, 'inpatients');
         });
 
-        document.getElementById('vitalSearchInput').addEventListener('input', (e) => {
+        on('vitalSearchInput', 'input', (e) => {
             this.searchVitalSigns(e.target.value);
         });
 
         // Filter functions
-        document.getElementById('recordFilterType').addEventListener('change', () => this.filterRecords());
-        document.getElementById('recordFilterNHIS').addEventListener('change', () => this.filterRecords());
+        on('recordFilterType', 'change', () => this.filterRecords());
+        on('recordFilterNHIS', 'change', () => this.filterRecords());
 
         // Export buttons
-        document.getElementById('exportRecords').addEventListener('click', () => this.exportTableData('records'));
-        document.getElementById('exportOutpatients').addEventListener('click', () => this.exportTableData('outpatients'));
-        document.getElementById('exportInpatients').addEventListener('click', () => this.exportTableData('inpatients'));
-        document.getElementById('exportDataBtn').addEventListener('click', () => this.exportAllData());
-        document.getElementById('importDataBtn').addEventListener('click', () => this.importData());
-        document.getElementById('importFileInput').addEventListener('change', (e) => this.handleFileImport(e));
-        document.getElementById('clearAllDataBtn').addEventListener('click', () => this.clearAllData());
+        on('exportRecords', 'click', () => this.exportTableData('records'));
+        on('exportOutpatients', 'click', () => this.exportTableData('outpatients'));
+        on('exportInpatients', 'click', () => this.exportTableData('inpatients'));
+        on('exportDataBtn', 'click', () => this.exportAllData());
+        on('importDataBtn', 'click', () => this.importData());
+        on('importFileInput', 'change', (e) => this.handleFileImport(e));
+        on('clearAllDataBtn', 'click', () => this.clearAllData());
 
         // Mobile menu toggle
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('show');
+        on('menuToggle', 'click', () => {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) sidebar.classList.toggle('show');
         });
 
         // Close sidebar when clicking outside
@@ -811,12 +845,14 @@ class HospitalManagementSystem {
     }
 
     switchSection(sectionId) {
-        console.log('Switching to section:', sectionId);
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        section.classList.add('active');
 
         if (sectionId === 'patient-registration') {
             this.updateGeneratedFolderNumber();
+            this.toggleNHISFields();
         }
     }
 }
@@ -903,6 +939,7 @@ function initApp() {
     setTimeout(() => {
         hms = new HospitalManagementSystem();
         window.hms = hms;
+        hms.init();
     }, 100);
 }
 

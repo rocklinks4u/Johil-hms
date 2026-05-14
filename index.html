@@ -13,7 +13,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="hospital-logo">
-                    <i class="fas fa-hospital"></i>
+                    <img src="images/Johil-logo.png" alt="Johil Amansie Hospital Logo">
                 </div>
                 <h2>Johil Amansie Hospital</h2>
             </div>
@@ -63,7 +63,7 @@
             <!-- Top Navigation Bar -->
             <div class="top-navbar">
                 <div class="navbar-left">
-                    <button class="menu-toggle" id="menuToggle">
+                    <button class="menu-toggle" id="menuToggle" type="button">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1 class="page-title">Hospital Management System</h1>
@@ -176,7 +176,7 @@
                         <!-- Folder Number Display -->
                         <div class="folder-number-display">
                             <span>Folder Number:</span>
-                            <p id="generatedFolderNumber">2026/001</p>
+                            <p id="generatedFolderNumber"></p>
                         </div>
                         <input type="hidden" id="editingFolderNumber">
 
@@ -283,8 +283,8 @@
                                             <input type="text" id="nhisNumber" placeholder="Enter NHIS number">
                                         </div>
                                         <div class="form-group">
-                                            <label for="insuranceProvider">Insurance Provider</label>
-                                            <input type="text" id="insuranceProvider" placeholder="Enter insurance provider">
+                                            <label for="insuranceProvider">Insurance CCC</label>
+                                            <input type="text" id="insuranceProvider" placeholder="Enter insurance CCC">
                                         </div>
                                     </div>
                                 </div>
@@ -324,6 +324,10 @@
                         </div>
 
                         <form id="vitalSignsForm" class="vital-signs-form">
+                            <div class="vital-sign-item">
+                                <label for="vitalPatientName">Patient Full Name *</label>
+                                <input type="text" id="vitalPatientName" placeholder="Enter registered patient name" required>
+                            </div>
                             <div class="vital-signs-grid">
                                 <div class="vital-sign-item">
                                     <label for="temperature">
